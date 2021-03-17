@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -27,14 +28,15 @@ type server struct {
 }
 
 func (s *server) routes() {
-	s.router.GET("/", s.handleRenderHTML())
+	s.router.GET("/greeting/:name", s.handleGetGreeting())
+	s.router.POST("/greeting", s.handleSetGreeting())
 }
 
-func (s *server) handleRenderHTML() httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (s *server) handleGetGreeting() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		input := &s3.GetObjectInput{
-			Bucket: aws.String(""),
-			Key:    aws.String(""),
+			Bucket: aws.String("greetings"),
+			Key:    aws.String(ps.ByName("name")),
 		}
 		obj, err := s.s3.GetObject(r.Context(), input)
 		if err != nil {
@@ -52,5 +54,34 @@ func (s *server) handleRenderHTML() httprouter.Handle {
 
 		w.Write(b)
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (s *server) handleSetGreeting() httprouter.Handle {
+	type Request struct {
+		Name string `json:"name"`
+	}
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		body, err := r.GetBody()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong"))
+			return
+		}
+		defer body.Close()
+
+		b, err := io.ReadAll(body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong"))
+			return
+		}
+
+		var req Request
+		if err := json.Unmarshal(b, &req); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong"))
+			return
+		}
 	}
 }
