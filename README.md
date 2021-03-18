@@ -1,7 +1,7 @@
 # localstack-demo
 
 ## Quickstart
-To get started, simply run `make up`. From there, you can hit `http://localhost:8080/greeting` with something that looks like:
+To run the completed app, simply run `make up`. From there, you can hit `http://localhost:8080/greeting` with something that looks like:
 ```
 {
   "name": "Bethany"
