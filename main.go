@@ -68,7 +68,6 @@ func (s *server) handleGetGreeting() httprouter.Handle {
 
 		// Write the file contents
 		w.Write(b)
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -106,8 +105,5 @@ func (s *server) handleSetGreeting() httprouter.Handle {
 			w.Write([]byte(fmt.Sprintf("Something went wrong: %s", err.Error())))
 			return
 		}
-
-		// We did it!
-		w.WriteHeader(http.StatusOK)
 	}
 }
