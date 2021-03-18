@@ -5,22 +5,8 @@ services:
     build: .
     ports:
       - "8080:8080"
-    depends_on:
-      - localstack
     environment:
-      - WAIT_HOSTS=localstack:4566
+      - WAIT_HOSTS=
       - WAIT_HOSTS_TIMEOUT=60
       - WAIT_SLEEP_INTERVAL=1
       - WAIT_HOST_CONNECT_TIMEOUT=5
-  localstack:
-    image: localstack/localstack:0.12.7
-    ports:
-      - '4566:4566' # There are other ports available, but we really only care about 4566 for our usage
-    environment:
-      - SERVICES=s3
-      - DEBUG=1
-        #      - INIT_SCRIPTS_PATH=./fixtures/localstack-init # For this to work, we'd need to mount the volume anyways, so we're going to take a shortcut
-    volumes:
-        #      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack" # Stores randomly generated SSL certs - which we don't need for this
-        #      - "/var/run/docker.sock:/var/run/docker.sock" # Not sure why this was recommended, it works without this
-      - "./fixtures/localstack-init:/docker-entrypoint-initaws.d" # Mounts our startup script(s) to the entrypoint

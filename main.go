@@ -14,18 +14,10 @@ import (
 )
 
 func main() {
-	customResolver := func(service, region string) (aws.Endpoint, error) {
-		return aws.Endpoint{
-			URL:               "http://localstack:4566",
-			HostnameImmutable: true,
-			SigningRegion:     region,
-		}, nil
-	}
 	s := server{
 		router: httprouter.New(),
 		s3: s3.NewFromConfig(aws.Config{
-			Region:           "us-east-1",
-			EndpointResolver: aws.EndpointResolverFunc(customResolver),
+			Region: "us-east-1",
 		}),
 	}
 

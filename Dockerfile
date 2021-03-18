@@ -9,7 +9,7 @@ FROM alpine:latest
 WORKDIR /root/
 COPY --from=builder /app/demo .
 
-# a bit of magic to 'wait' for mysql to be available for testing
+# a bit of magic to wait for dependencies to be available for testing
 ENV WAIT_VERSION 2.7.3
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait
